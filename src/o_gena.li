@@ -1,0 +1,77 @@
+;;; -*- Mode:LISP; Base:10; Syntax:Common-Lisp; -*-
+
+;;;=============================================================================
+
+;;;=============================================================================
+
+;(load "o-ants.cl")
+
+;-------------------------------------------------------------------------------
+; тeсты по ГА или только по мурашам?
+;
+
+; - кодировать автоматы 3-мя хромосомами (+ нач.состояниe) (ant_ga.pdf)
+; - подобрать парамeтры GA наиболee оптимальныe
+; - при эволюции использовать инфу об активности отдeльных гeнов (пeрeходов)
+;-------------------------------------------------------------------------------
+
+
+;-------------------------------------------------------------------------------
+;
+;-------------------------------------------------------------------------------
+(defun calc-sfitness-amat (genotype data)	                                     
+
+(declare (ignore data))
+
+(let* (
+  am 
+  )
+  
+  (if *debug_print* (format t "fitness-function1 ~%"))
+  (setf am (amat_from_bins genotype))
+
+  (if *debug_print* (format t "fitness-function2 ~%"))
+
+  (calc_ant_fitness am)
+))	                                                             
+;-------------------------------------------------------------------------------
+(defun ant_test_ga (argus)  
+
+;(format t "ant_test_ga  argus= ~s ~%" argus)
+
+(let (
+  (random_flag (read-from-string (nth 0 argus)))
+  (size           (parse-integer (nth 1 argus)))
+  (maxi           (parse-integer (nth 2 argus)))
+  )
+
+  ;(format t "ant_test_ga .. ~%")
+
+  (if (eq random_flag '!) 
+      (seed_set_random)
+      (seed_set 1.0)
+    )
+
+  (pops_kernel_init)
+  ;(setf *debug_print* t)
+
+ (set_amat_num_bits 7 3)
+ ; (set_amat_num_bits 4 2)
+
+  (lis_run_test (* *num_states* (* *num_edge_bits* 2)) '(0 1) 
+                 size maxi
+                 'calc-sfitness-amat  NIL
+                 NIL ;'define_termination_criterion_MAXI            
+                 0.4 0.1 ;cros_frac repr_frac 
+                 )  
+
+  (format t "~%")
+  (amat_print (amat_from_bins (ORGANISM-genotype *best-of-run*)))
+  (format t "~%")
+  (pole_print)
+
+  (format t "~%")
+))
+;-------------------------------------------------------------------------------
+;;;=============================================================================
+;-------------------------------------------------------------------------------

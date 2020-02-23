@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+###########################
+
+md=`date +%m%d`
+for i in  h g f e d c b a
+do
+    mdi=$md$i
+    if test -d $mdi*
+    then
+    break
+    fi
+    mdi_old=$mdi
+done
+mkdir $mdi_old
+    
+###########################
+
+

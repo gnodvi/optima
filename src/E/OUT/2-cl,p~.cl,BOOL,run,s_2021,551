@@ -1,0 +1,79 @@
+
+
+Fitness cases: 
+
+  1)  T         T         T         T         T          =  NIL             
+  2)  T         T         T         T         NIL        =  T               
+  3)  T         T         T         NIL       T          =  T               
+  4)  T         T         T         NIL       NIL        =  NIL             
+  5)  T         T         NIL       T         T          =  T               
+  6)  T         T         NIL       T         NIL        =  NIL             
+  7)  T         T         NIL       NIL       T          =  NIL             
+  8)  T         T         NIL       NIL       NIL        =  T               
+  9)  T         NIL       T         T         T          =  T               
+ 10)  T         NIL       T         T         NIL        =  NIL             
+ 11)  T         NIL       T         NIL       T          =  NIL             
+ 12)  T         NIL       T         NIL       NIL        =  T               
+ 13)  T         NIL       NIL       T         T          =  NIL             
+ 14)  T         NIL       NIL       T         NIL        =  T               
+ 15)  T         NIL       NIL       NIL       T          =  T               
+ 16)  T         NIL       NIL       NIL       NIL        =  NIL             
+ 17)  NIL       T         T         T         T          =  T               
+ 18)  NIL       T         T         T         NIL        =  NIL             
+ 19)  NIL       T         T         NIL       T          =  NIL             
+ 20)  NIL       T         T         NIL       NIL        =  T               
+ 21)  NIL       T         NIL       T         T          =  NIL             
+ 22)  NIL       T         NIL       T         NIL        =  T               
+ 23)  NIL       T         NIL       NIL       T          =  T               
+ 24)  NIL       T         NIL       NIL       NIL        =  NIL             
+ 25)  NIL       NIL       T         T         T          =  NIL             
+ 26)  NIL       NIL       T         T         NIL        =  T               
+ 27)  NIL       NIL       T         NIL       T          =  T               
+ 28)  NIL       NIL       T         NIL       NIL        =  NIL             
+ 29)  NIL       NIL       NIL       T         T          =  T               
+ 30)  NIL       NIL       NIL       T         NIL        =  NIL             
+ 31)  NIL       NIL       NIL       NIL       T          =  NIL             
+ 32)  NIL       NIL       NIL       NIL       NIL        =  T               
+
+
+Parameters used for this run: 
+---------------------------------------------------------------------------
+Maximum number of Generations:            1 
+Size of Population:                       1 
+Reproduction fraction:                    0.1 
+Selection method:                         TOURNAMENT 
+Generation method:                        RAMPED-HALF-AND-HALF 
+Tournament group size:                    7 
+---------------------------------------------------------------------------
+Max depth of new individuals:             5 
+Max depth of new subtrees for mutants:    4 
+Max depth of individuals after crossover: 17 
+Crossover at any point fraction:          0.2 
+Crossover at function points fraction:    0.7 
+Number of fitness cases:                  32 
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Generation 0: 
+Average standardized fitness = 0.0 
+Best    standardized fitness = 0.0 and 32 hits. 
+It was: 
+ADF0: (OR (AND ARG0 ARG1) (AND (NAND ARG0 ARG0) (NAND ARG1 ARG1))) 
+ADF1: 
+(NAND (OR (AND ARG0 ARG1) (AND (NAND ARG0 ARG0) (NAND ARG1 ARG1)))
+ (OR (AND ARG0 ARG1) (AND (NAND ARG0 ARG0) (NAND ARG1 ARG1)))) 
+RPB0: (ADF1 (ADF0 (ADF0 D0 D1 D0) (ADF0 D2 D3 D0) D0) D4 D0) 
+---------------------------------------------------------------------------
+
+
+===========================================================================
+THE BEST: 
+
+Generation 0, standardized fitness = 0.0 and 32 hits.  
+It was: 
+ADF0: (OR (AND ARG0 ARG1) (AND (NAND ARG0 ARG0) (NAND ARG1 ARG1))) 
+ADF1: 
+(NAND (OR (AND ARG0 ARG1) (AND (NAND ARG0 ARG0) (NAND ARG1 ARG1)))
+ (OR (AND ARG0 ARG1) (AND (NAND ARG0 ARG0) (NAND ARG1 ARG1)))) 
+RPB0: (ADF1 (ADF0 (ADF0 D0 D1 D0) (ADF0 D2 D3 D0) D0) D4 D0) 
+
+

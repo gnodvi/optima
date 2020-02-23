@@ -1,0 +1,679 @@
+;;; -*- Mode:LISP; Base:10; Syntax:Common-Lisp; -*-
+
+;;;=============================================================================
+
+(load "T/ltk") ; нужна прeдваритeльная компиляция из Makefile
+
+;(load "b-ltk+.cl") ; так работаeт, но долго 
+
+;-------------------------------------------------
+;(load "a-comm.cl")
+;(my_load "b-ltk+.cl" "b")
+
+; так правильнee всeго, но выдаeт ошибку: !!
+;
+;*** - (USE-PACKAGE (#<PACKAGE LTK>) #<PACKAGE COMMON-LISP-USER>): 1 name
+;      conflicts remain
+;      Which symbol with name "VALUE" should be accessible in
+;       #<PACKAGE COMMON-LISP-USER>
+;-------------------------------------------------
+
+(use-package :ltk)
+
+(load "b-ltkx.cl")
+
+;===============================================================================
+;; example-usage
+;;
+
+;-------------------------------------------------------------------------------
+(defun with-widgets-test ()
+
+(with-ltk ()
+  (with-widgets
+   (toplevel top-frame :title "with-widgets-test"
+             (label lb1 :text "Test, Test!" :pack '(:side :top))
+             (entry en1 :pack '(:side :top))
+             (frame fr1 :pack '(:side :bottom)
+                    (button bt1 :text "OK" :pack '(:side :right)
+                            :command (lambda () (format t "Pressed OK~%")))
+                    (button bt2 :text "CANCEL" :pack '(:side :left)
+                            :command (lambda () (withdraw top-frame)))))
+   (setf (text lb1) "Test, Test, Test!")
+   )
+)
+)
+;===============================================================================
+(defun input-box (prompt &key (title "Input"))
+  
+(let* (
+  (*exit-mainloop* nil)
+  (ok t)
+  (w (make-instance 'toplevel :title title))
+  (l (make-instance 'label :master w :text prompt))
+  (e (make-instance 'entry :master w :width 40))
+  (f (make-instance 'frame :master w))
+  (b_ok (make-instance 'button :master f :text "Ok" 
+                       :command (lambda ()
+                                  (break-mainloop)
+                                  )))
+  (b_cancel (make-instance 'button :master f :text "Cancel" 
+                           :command (lambda ()
+                                      (setf ok nil)
+                                      (break-mainloop)
+                                      )))
+  )
+
+  (pack l :side :top :anchor :w)
+  (pack e :side :top)
+  (pack f :side :top :anchor :e)
+  (pack b_cancel :side :right)
+  (pack b_ok :side :right)
+  (bind w "<Return>" (lambda (event)
+                       (declare (ignore event))
+                       (break-mainloop)))
+  (focus e)
+  (grab w)
+
+  (mainloop)
+
+  (grab-release w)
+  (withdraw w)
+  (and ok
+       (text e))
+
+)
+)
+;-------------------------------------------------------------------------------
+(defun modal-test ()
+  
+(with-ltk ()
+(let* (
+  (b (make-instance 'button :text "Input" 
+                    :command (lambda ()
+                               (let ((erg (input-box "Enter a string:" :title "String input")))
+                                 (if erg 
+                                     (format t "input was: ~a~%" erg)
+                                     (format t "input was cancelled~%")
+                                     )
+                                 (finish-output))
+                               )
+                    ))
+  )
+
+  (pack b))
+)
+)
+;-------------------------------------------------------------------------------
+
+;(pushnew :ltk *features*)
+
+;===============================================================================
+;-------------------------------------------------------------------------------
+(defun hello-1 ()
+
+(with-ltk ()
+(let (
+  (b (make-instance 'button
+                    :master nil
+                    :text "Press Me"
+                    :command (lambda ()
+                               (format t "Hello World!~&"))))
+  )
+
+  (pack b))
+)
+)
+;-------------------------------------------------------------------------------
+(defun hello-2 ()
+
+(with-ltk ()
+(let* (
+  (f (make-instance 'frame))
+  (b1 (make-instance 'button
+                     :master f
+                     :text "Button 1"
+                     :command (lambda () (format t "Button1~&"))))
+  (b2 (make-instance 'button
+                     :master f
+                     :text "Button 2"
+                     :command (lambda () (format t "Button2~&"))))
+  )
+  
+  (pack f)
+  (pack b1 :side :left)
+  (pack b2 :side :left)
+  (configure f :borderwidth 3)
+  (configure f :relief :sunken)
+  
+))
+)
+;-------------------------------------------------------------------------------
+(defun draw_test1 (c)
+
+  (create-line    c '(10 10  40 50  70 15))
+  (create-polygon c '(50 50  100 60  100 100  50 140 ))
+  (create-text    c 200 50 "Canvas test")
+
+  (create_circle    c 150 150 30 "yellow")
+  (create-rectangle c 200 150 270 190)
+  (create_line      c '(250 200  300 250) "blue" 1)
+  (create_line      c '(250 250  300 200) "red"  2)
+
+)
+;-------------------------------------------------------------------------------
+(defun mytest1 ()
+
+(with-ltk ()
+(let* (
+  (c    (make-instance 'canvas :width 400 :height 300 ;:background "white"
+                       ))
+  )
+
+  (draw_test1 c)
+  ;(draw_test2 c)
+
+  (bind c "<ButtonPress-3>" (lambda (evt) (declare (ignore evt))
+                              (break-mainloop)
+                              ;(exit-wish) ; повисаeт остаток приложeния
+                              ;(setf *exit-mainloop* t)
+                              ))
+
+  (pack c)
+
+))
+);)
+;-------------------------------------------------------------------------------
+(defun volt_test ()
+
+(with-ltk ()
+
+(let* (
+  (f (make-instance 'frame))
+;  (b1 (make-instance 'button
+;                     :master f
+;                     :text "Button 1"
+;                     :command (lambda () (format t "Button1~&"))))
+
+  (s (make-instance 'scale
+                     :master f
+                     ;:text "Button 1"
+                     :command (lambda () (format t "Button1~&"))))
+
+;  (b2 (make-instance 'button
+;                     :master f
+;                     :text "Button 2"
+;                     :command (lambda () (format t "Button2~&"))))
+
+  (c    (make-instance 'canvas :width 200 :height 100 :background "white"
+                       :master f
+                       ))
+  )
+  
+;  (bind s "<ButtonRelease-1>" (lambda (evt)
+;                                (declare (ignore evt))
+;                                (format t ".......... ~%")
+;                                )
+;        )
+
+  (pack f)
+
+  (pack s :side :left)
+  ;(pack b2 :side :left)
+  (pack c :side :left)
+
+  (configure f :borderwidth 3)
+  (configure f :relief :sunken)
+
+)
+))
+;===============================================================================
+;-------------------------------------------------------------------------------
+;;;; default ltk test
+;-------------------------------------------------------------------------------
+
+(defvar *do-rotate* nil)
+(defvar *demo-line* nil)
+(defvar *demo-canvas* nil)
+
+;-------------------------------------------------------------------------------
+(defun eggs (radio)
+
+  (format t "Prepare ~a eggs.~%"
+          (case (value radio)
+            (1 "fried")
+            (2 "stirred")
+            (3 "cooked")))
+
+  (finish-output)
+)
+;-------------------------------------------------------------------------------
+
+(defvar *angle*  0.0f0)
+(defvar *angle2* 0.0f0)
+(defvar *angle3* 0.0f0)
+(declaim (single-float *angle* *angle2* *angle3*))
+
+;-------------------------------------------------------------------------------
+(defun rotate ()
+;  (declare (optimize speed)    (single-float *angle* *angle2* *angle3*))
+  (let ((*debug-tk* nil))
+    (let ((lines nil)
+	  (dx (* 50 (sin *angle2*)))
+	  (dy (* 50 (cos *angle2*)))
+	  (wx (sin *angle3*))
+;	  (wy (cos *angle3*))
+	  )
+      (incf *angle* 0.1f0)
+      (incf *angle2* 0.03f0)
+      (incf *angle3* 0.01f0)
+      
+      (dotimes (i 100)
+        (declare (fixnum i))
+	(let ((w (+ *angle* (* i 2.8001f0))))
+	  (let ((x (+ dx 250 (* 150 (sin w) wx)))
+		(y (+ dy 200 (* 150 (cos w)))))
+	    (push y lines)
+	    (push x lines)
+	    )))    
+      (set-coords *demo-canvas* *demo-line* lines))
+    (if *do-rotate*
+	(after 25 #'rotate)))
+)
+;-------------------------------------------------------------------------------
+(defun test-rotation ()
+
+  (setf *debug-tk* nil)
+  (time (dotimes (i 1000)
+	  (rotate))
+        )
+
+  (finish-output)
+)
+;-------------------------------------------------------------------------------
+(defun start-rotation ()
+
+  (setf *do-rotate* t)
+  (rotate)
+)
+;-------------------------------------------------------------------------------
+(defun stop-rotation ()
+
+  (setf *do-rotate* nil)
+)
+;-------------------------------------------------------------------------------
+(defun make_menu_main (c)
+
+(let* (
+  ;----------------------------------------------------------------------
+  (mb      (make-menubar))
+  (mfile   (make-menu mb "File" ))
+  ;----------------------------------------------------------------------
+
+  (mf-load (make-menubutton mfile "Load" (lambda () ;(error "asdf")
+                                           (format t "Load pressed~&")
+                                           (finish-output))
+                            :underline 1))
+  (mf-save (make-menubutton mfile "Save" (lambda ()
+                                           (format t "Save pressed~&")
+                                           (finish-output))
+                            :underline 1))
+  (sep1      (add-separator mfile))
+
+  (mf-export (make-menu mfile "Export..."))
+  (mfe-jpg   (make-menubutton mf-export "jpeg" (lambda ()
+                                                 (format t "Jpeg pressed~&")
+                                                 (finish-output))))
+  (mfe-gif   (make-menubutton mf-export "png" (lambda ()
+                                                (format t "Png pressed~&")
+                                                (finish-output))))
+
+  (sep2      (add-separator mfile))
+  (mf-print  (make-menubutton mfile "Print" (lambda () (postscript c "b-ltk+.ps"))))
+  (sep3      (add-separator mfile))
+
+  (mf-scale  (make-menu mfile "Scale..."))
+  (mfs-1 (make-menubutton mf-scale "0.5" (lambda ()
+                                           (scale c 0.5))))
+  (mfs-2 (make-menubutton mf-scale "2" (lambda ()
+                                         (scale c 2))))
+  (mfs-3 (make-menubutton mf-scale "2/0.5" (lambda ()
+                                             (scale c 2 0.5))))
+  (mfs-4 (make-menubutton mf-scale "0.5/2" (lambda ()
+                                             (scale c 0.5 2))))
+
+  (sep4  (add-separator mfile))
+  (mf-exit (make-menubutton mfile "Exit" (lambda () (setf *exit-mainloop* t))
+                            :underline 1
+                            :accelerator "Alt Q"))
+  ;----------------------------------------------------------------------
+
+  )
+  ;-----------------
+
+  (declare (ignore mf-print mf-exit mfe-gif mfe-jpg mf-save mf-load sep1 sep2 sep3 sep4 
+                   mp-1 mp-2 mp-3 mfs-1 mfs-2 mfs-3 mfs-4)) 
+  
+
+
+))
+;-------------------------------------------------------------------------------
+(defun make_menu_popup (c)
+
+(let* (
+  (mp (make-menu nil "Popup"))
+  (mp-1 (make-menubutton mp "Option 1" (lambda () (format t "Popup 1~&") (finish-output))))
+  (mp-2 (make-menubutton mp "Option 2" (lambda () (format t "Popup 2~&") (finish-output))))
+  (mp-3 (make-menubutton mp "Option 3" (lambda () (format t "Popup 3~&") (finish-output))))
+  )
+
+  (declare (ignore mf-print mf-exit mfe-gif mfe-jpg mf-save mf-load sep1 sep2 sep3 sep4 
+                   mp-1 mp-2 mp-3 mfs-1 mfs-2 mfs-3 mfs-4)) 
+
+  (bind c "<1>" (lambda (event) (popup mp (event-root-x event) (event-root-y event))))
+
+  mp
+))
+;-------------------------------------------------------------------------------
+(defun make_eggs (bar)
+
+
+(let* (
+  (fradio (make-instance 'frame :master bar))
+  (leggs  (make-instance 'label :master fradio :text "Eggs:"))
+  (r1 (make-instance 'radio-button :master fradio :text "fried"   :value 1 :variable "eggs"))
+  (r2 (make-instance 'radio-button :master fradio :text "stirred" :value 2 :variable "eggs"))
+  (r3 (make-instance 'radio-button :master fradio :text "cooked"  :value 3 :variable "eggs"))
+  )
+
+  (pack (list fradio leggs r1 r2 r3) :side :left)
+
+  (dolist (r (list r1 r2 r3))
+    (let ((button r))
+      (setf (command r) (lambda (val)
+                          (declare (ignore val))
+                          (eggs button))))
+    )
+))
+;-------------------------------------------------------------------------------
+(defun make_hallo_welt (bar2)
+
+(let* (
+  (b1 (make-instance 'button :master bar2 :text "Hallo"
+                     :command (lambda ()
+                                (format t "Hallo~%")
+                                (finish-output))))
+  (b2 (make-instance 'button :master bar2 :text  "Welt!"
+                     :command (lambda ()
+                                (format t "Welt~%")
+                                (finish-output))))
+  )
+
+  (pack b1 :side :left)
+  (pack b2 :side :left)
+
+))
+;-------------------------------------------------------------------------------
+(defun make_rotation (bar)
+
+(let* (
+  (fr (make-instance 'frame :master bar))
+  (lr     (make-instance 'label  :master fr :text "Rotation:"))
+  (bstart (make-instance 'button :master fr :text "Start" :command 'start-rotation))
+  (bstop  (make-instance 'button :master fr :text "Stop"  :command 'stop-rotation))
+  )
+
+  (pack fr :side :left)
+
+  (pack lr :side :left)
+  (configure fr :borderwidth 2 :relief :sunken)
+
+  (pack bstart :side :left)
+  (pack bstop  :side :left)
+
+))
+;-------------------------------------------------------------------------------
+(defun ltktest ()
+
+(with-ltk ()
+
+(let* (
+  (bar    (make-instance 'frame))
+  (bar2   (make-instance 'frame))
+
+  (f  (make-instance 'frame  :master bar2))
+  (l  (make-instance 'label  :master f :text "Test:"))
+  (b3 (make-instance 'button :master f :text  "Ok." :command 'test-rotation))
+
+
+  (e  (make-instance 'entry :master bar))
+  (b4 (make-instance 'button :master bar :text "get!"
+                     :command (lambda ()
+                                (format t "content of entry:~A~%" (text e))
+                                (finish-output))))
+  (b5 (make-instance 'button :master bar :text "set!"
+                     :command (lambda ()
+                                (setf (text e) "test of set"))))
+
+  ;(sc (make-instance 'scrolled-canvas :borderwidth 2 :relief :raised))
+  (sc (make-instance 'canvas :borderwidth 2 :relief :raised :width 300 :height 300 ))
+  (c  (canvas sc))
+
+  (lines nil) ; потом заполним
+  ;(mp (make_menu_popup c))
+)
+    
+  (make_menu_main  c)
+  (make_menu_popup c)
+  
+  (bind *tk* "<Alt-q>" (lambda (event) (declare (ignore event)) (setf *exit-mainloop* t)))
+  
+  (configure c :borderwidth 2 :relief :sunken)
+  ;(scrollregion c 0 0 500 400)
+  ;(scrollregion c 0 0 300 300)
+
+  ;(configure bar :width 800)  ;???
+
+  (make_eggs bar)
+  (make_hallo_welt bar2)
+
+  ;(pack sc   :side :top :fill :both :expand t)
+  (pack sc   :side :top )
+  (pack bar  :side :top)
+  (pack bar2 :side :bottom)
+
+  ;(pack fr :side :left)
+  (make_rotation bar)
+  ;(pack lr :side :left)
+  ;(configure fr :borderwidth 2 :relief :sunken)
+
+  ;(pack bstart :side :left)
+  ;(pack bstop  :side :left)
+
+  ;(pack b1 :side :left)
+  ;(pack b2 :side :left)
+  (configure f :borderwidth 2 :relief :sunken)
+
+  (pack f  :fill :x :side :left)
+  (pack l  :side :left)
+  (pack b3 :side :left)
+
+  (pack e  :side :left)
+  (pack b4 :side :left)
+  (pack b5 :side :left)
+  ;(pack b5 :side :bottom)
+
+  (dotimes (i 100)
+    (let ((w (* i 2.8001f0)))
+    (let ((x (+ 250 (* 150.0f0 (sin w))))
+          (y (+ 200 (* 150.0f0 (cos w)))))
+        (push y lines)
+        (push x lines)
+        ))
+    )
+
+  (setf *demo-line* (create-line c lines))
+  (setf *demo-canvas* c)
+
+  (create-text c 10 10 "Ltk Demonstration")
+
+)))
+;-------------------------------------------------------------------------------
+;-------------------------------------------------------------------------------
+(defun ltk_eyes ()
+
+(with-ltk ()
+
+(let* (
+  (*debug-tk* nil)
+  (w  (screen-width))
+  (h  (screen-height))
+  (c  (make-instance 'canvas :width 400 :height 300))
+
+  (e1 (create-oval c 10 10 190 290))
+  (e2 (create-oval c 210 10 390 290))
+  (p1 (create-oval c 10 10 40 40))
+  (p2 (create-oval c 10 10 40 40))
+  (old-x 0)
+  (old-y 0)
+  )
+  
+  (setf *debug-tk* nil)
+
+  (labels ((update ()
+
+    (multiple-value-bind (pos-x pos-y) (screen-mouse)
+    (let* (
+      (wx (window-x *tk*))
+      (wy (window-y *tk*))
+      (width (window-width *tk*))
+      (height (window-height *tk*))
+      (mx pos-x)
+      (my pos-y)
+      (x (truncate (* width  (/ mx w))))
+      (y (truncate (* height (/ my h))))
+      (diam (truncate width 8))
+      (dx1 (- mx (+ wx (truncate  width 4))))
+      (dy1 (- my (+ wy (truncate height 2))))
+      (dx2 (- mx (+ wx (* 3 (truncate width 4)))))
+      (dy2 (- my (+ wy (truncate height 2))))
+      (p1x (+ (- (truncate  width 4) (truncate diam 2)) (truncate (* width  dx1) (* 4.5 w))))
+      (p1y (+ (- (truncate height 2) (truncate diam 2)) (truncate (* height dy1) (* 2.3 h))))
+      (p2x (+ (- (* 3 (truncate width 4))  (truncate diam 2)) (truncate (*  width  dx2) (* 4.5 w))))
+      (p2y (+ (- (truncate height 2) (truncate diam 2)) (truncate (* height dy2) (* 2.3 h))))      
+      )
+
+      (setf *debug-tk* nil)
+
+      (unless (and (= x old-x)
+                   (= y old-y))
+        (set-coords c e1 (list 10 10 (- (truncate width 2) 10) (- height 10)))
+        (set-coords c e2 (list (+ (truncate width 2) 10) 10  (- width 10) (- height 10)))
+        (set-coords c p1 (list p1x p1y (+ diam p1x) (+ diam p1y)))
+        (set-coords c p2 (list p2x p2y (+ diam p2x) (+ diam p2y)))
+        (setf old-x x
+              old-y y)
+        )
+      ))
+
+  (after 100 #'update) ; ???
+  ))
+
+    (pack c :expand 1 :fill :both)
+
+    (itemconfigure c e1 "width" 10)
+    (itemconfigure c e2 "width" 10)
+    (itemconfigure c p1 "fill" "blue")
+    (itemconfigure c p2 "fill" "blue")
+
+    (after 100 #'update) ; ???
+
+    )
+)))
+;-------------------------------------------------------------------------------
+(defun canvastest ()
+
+(with-ltk ()
+(let* (
+  (sc   (make-instance 'scrolled-canvas))
+  (c    (canvas sc))
+
+  (line    (create-line c (list 100 100 400 50 700 150)))
+  (polygon (create-polygon c (list 50 150 250 160 250
+                                   300 50 330 )))
+  (text (create-text c 260 250 "Canvas test"))
+  )
+
+  (pack sc :expand 1 :fill :both)
+  (scrollregion c 0 0 800 800)
+
+  (format t "line= ~s ~%"    line)
+  (format t "polygon= ~s ~%" polygon)
+  (format t "text= ~s ~%"    text)
+)))
+;-------------------------------------------------------------------------------
+(defun scribble ()
+
+(with-ltk ()
+(let* (
+  (canvas (make-instance 'canvas))
+  (down nil)
+  )
+
+  (pack canvas)
+  
+  (bind canvas "<ButtonPress-1>"
+        (lambda (evt)
+          (setf down t)
+          (create-oval canvas
+                       (- (event-x evt) 10) (- (event-y evt) 10)
+                       (+ (event-x evt) 10) (+ (event-y evt) 10))))
+  (bind canvas "<ButtonRelease-1>" (lambda (evt)
+                                     (declare (ignore evt))
+                                     (setf down nil)))
+  (bind canvas "<Motion>"
+        (lambda (evt)
+          (when down
+            (create-oval canvas
+                         (- (event-x evt) 10) (- (event-y evt) 10)
+                         (+ (event-x evt) 10) (+ (event-y evt) 10)))))
+)))
+;===============================================================================
+(defun main-test ()
+  
+(with-ltk ()
+(let* (
+  (b1 (make-instance 'button :text "ltk_eyes"   :command 'ltk_eyes))
+  (b2 (make-instance 'button :text "canvastest" :command 'canvastest))
+  (b3 (make-instance 'button :text "scribble"   :command 'scribble))
+  (b4 (make-instance 'button :text "mytest1"    :command 'mytest1))
+  )
+
+  (pack b1)
+  (pack b2)
+  (pack b3)
+  (pack b4)
+  
+)))
+;===============================================================================
+
+;(hello-1)
+;(hello-2)
+;(canvastest)
+
+;(scribble)
+;(modal-test)
+;(ltk_eyes)
+
+;(mytest1)
+
+;(ltktest)
+;(with-widgets-test)
+
+;(volt_test)
+
+;===============================================================================
+
+(main-test)
+
+

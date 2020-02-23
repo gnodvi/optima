@@ -1,0 +1,693 @@
+;;; -*- Mode:LISP; Base:10; Syntax:Common-Lisp; -*-
+
+;;;=============================================================================
+
+
+(load "d_visg.cl")
+
+
+;===============================================================================
+; burger.h
+;===============================================================================
+
+(defconstant TNUM_MAX 1000) ;#define TNUM_MAX 1000
+(defconstant FNUM_MAX   10) ;#define FNUM_MAX 10
+
+;typedef struct {
+(defclass TADMOR () (
+  (xnum  :accessor XNUM)  ;  int  xnum; //   
+  (tnum  :accessor TNUM)  ;  int  tnum; // размeрность по врeмeни
+  (fnum  :accessor FNUM)  ;  int  fnum; // количeство функций
+
+  (names :accessor NAMES) ;  char    *names[FNUM_MAX];
+  (t     :accessor VAR_T) ;  double  *t;
+  (u     :accessor VAR_U) ;  double  *u[FNUM_MAX][TNUM_MAX];
+))
+;} TADMOR;
+
+;void  reader_test (char *main_dir);
+;void  tadmor_get_arrays (TADMOR *tad, char *main_dir);
+
+;===============================================================================
+; burger.c 
+;===============================================================================
+
+;#include <stdlib.h>
+;#include <stdio.h>
+;#include <string.h>
+
+;#include "glib.h"
+
+;//------------------------
+;//#include "glib/gstdio.h"
+
+;#include <unistd.h>
+
+;#define g_chdir chdir
+;//------------------------
+
+;#include "burger.h"
+
+;-------------------------------------------------------------------------------
+;int
+(defun calc_tnum (
+       dir_name ; char *dir_name
+       )
+
+(let (
+;  GDir*  dir;
+  ;(dir_list (directory "./D/*/"))
+  (dir_list (directory dir_name))
+
+;  dir = g_dir_open (dir_name, 0, NULL);
+;  if (dir == NULL) 
+;    g_error ("dir == NULL");
+
+;  const  gchar*  fname;
+  (num 0) ;  int    num = 0;
+  )
+
+;  while ((fname = g_dir_read_name (dir)) != NULL) {
+  (dotimes (i (list-length dir_list))
+
+    ;(format t "~s ~%" (nth i dir_list))
+    ;(setf dir_name (last (pathname-directory    (nth i dir_list))))
+    ;(setf dir_name (first dir_name))
+
+;    //if (!g_file_test (fname, G_FILE_TEST_IS_REGULAR))
+;    //  continue;
+;    //printf ("fname= %s \n", fname);
+
+    (incf num) ; num ++;
+    )
+
+  num ;  return (num);
+))
+;-------------------------------------------------------------------------------
+;char *
+(defun get_value_name (
+       dir_name ; char *dir_name
+       )
+
+(let (
+;  char *name;
+;  char  buf[80];
+
+;  strcpy (buf, dir_name);
+;  name = strtok (buf, "_");
+
+  ;(name (find "_" dir_name))
+  (index (search "_" dir_name))
+  )
+
+  (subseq dir_name 0 index) ; return (name);
+))
+;-------------------------------------------------------------------------------
+;char *
+(defun set_full_file_name (
+       dir_name ; char *dir_name, 
+       num      ; int num
+       )
+
+(let (
+  (work_dir "D")
+;  char *value_name;
+;  char num_name[80];
+
+  buffer ;  static char buffer[80];
+
+;  // выделим из названия директории само имя переменной
+  (value_name (get_value_name  dir_name))
+  )
+
+  ;(format t "dir_name  = ~s ~%"  dir_name)
+  ;(format t "value_name= ~s ~%"  value_name)
+
+;  // теперь формируем буфер полного имени файла данных:
+
+;  strcpy (buffer, dir_name);
+;  strcat (buffer, "/");  
+
+;  strcat (buffer, value_name); // имя переменной
+;  strcat (buffer, "_");
+
+;  sprintf (num_name, "%d", num);
+;  strcat (buffer, num_name);
+
+  (setf buffer (concatenate 'string work_dir "/" dir_name "/" value_name 
+                            "_" (format nil "~d"  num)))
+  ;(format t "buffer = ~s ~%"  buffer)
+
+  buffer ;  return (buffer);
+))
+;-------------------------------------------------------------------------------
+;int
+(defun calc_xnum (
+       dir_name ; char *dir_name
+       )
+
+(let (
+;  char *file_name;
+  (file_name  (set_full_file_name  dir_name 0))
+  (num 0)
+  )
+
+  ;(format t "calc_xnum -> dir_name: ~s ~%" dir_name)
+
+;  FILE  *file = fopen (file_name, "r");
+;  if (file == NULL) g_error ("file == NULL");
+  (with-open-file (finput file_name 
+                          :direction         :input      
+                          :if-does-not-exist nil)
+
+;  // просканируем файл данных и просто посчитаем сколько точек
+;  char  buffer[80];
+;  int   num = 0;
+
+;  while (fscanf (file, "%s ", buffer) != EOF) {
+    (loop 
+      (when (equal (read finput NIL NIL) NIL) (return))
+      (incf num)  ;num++;
+      )
+    )
+
+  num ;  return (num);
+))
+;-------------------------------------------------------------------------------
+;double *
+(defun read_values_u (
+       dir_name ; char *dir_name, 
+       xnum     ; int xnum, 
+       n_value  ; int n_value
+       )
+
+(let (
+;  double *ptr;
+;  char *file_name = set_full_file_name (dir_name, n_value);
+  (file_name  (set_full_file_name  dir_name n_value))
+
+;  ptr = malloc (xnum * sizeof (double));
+  (ptr (make-list xnum))
+
+;  FILE  *file = fopen (file_name, "r");
+;  if (file == NULL) g_error ("file == NULL");
+
+;  char  buffer[80];
+  value ;  float value;
+  (n  0) ;  int   n = 0;
+  )
+
+  (with-open-file (file file_name 
+                        :direction         :input      
+                        :if-does-not-exist nil)
+
+;  while (fscanf (file, "%s ", buffer) != EOF) {
+    (loop 
+      (when (equal 
+             (setf value (read file NIL NIL)) 
+             NIL) (return))
+
+;    value = atof (buffer);
+      (setf (nth n ptr) value) ;    ptr[n] = value;
+      (incf n) ; n++;
+;  }
+      )
+  )
+
+  ptr ;  return (ptr);
+))
+;-------------------------------------------------------------------------------
+;double *
+(defun read_values_t (
+       dir_name ; char *dir_name, 
+       tnum     ; int tnum
+       )
+
+(let* (
+  (dir_name (concatenate 'string "D/" dir_name "/*"))
+
+;  double *ptr;
+  (n  0) ;  int     n = 0;
+;  const   gchar*  fname;
+;  char    full_name[200];
+;  GDir*   dir;
+;  FILE   *file;
+;  char    buffer[180];
+  value ;  float   value;
+
+;  ptr = malloc (tnum * sizeof (double));
+  (ptr (make-list tnum))
+
+;  dir = g_dir_open (dir_name, 0, NULL);
+;  if (dir == NULL)  g_error ("dir == NULL");
+  (dir_list (directory dir_name))
+  )
+
+
+  ;(format t "dir_name= ~s ~%" dir_name)
+  ;(format t "dir_list= ~s ~%" dir_list)
+
+;  while ((fname = g_dir_read_name (dir)) != NULL) {
+  (dolist (i dir_list)
+
+;    strcpy (full_name, dir_name);
+;    strcat (full_name, "/");
+;    strcat (full_name, fname);
+
+    ;(format t "i= ~s ~%" i)
+    ;(setf full_name (namestring i))
+
+;    file = fopen (full_name, "r");
+;    if (file == NULL) g_error ("file == NULL");
+     (with-open-file (file i 
+                          :direction         :input      
+                          :if-does-not-exist nil)
+
+
+;    fgets (buffer, 80, file); 
+;    sscanf (buffer, "%f", &value);
+       (setf value (read file))
+
+       (setf (nth n ptr) value) ;    ptr[n] = value;
+
+       ;;    fclose (file);
+       (incf n) ;    n ++;
+       ))
+
+  ptr ;  return (ptr);
+))
+;-------------------------------------------------------------------------------
+;void
+(defun check_dir_files (
+       main_dir ; char *main_dir, 
+       ; int *p_fnum, 
+       flist    ; char flist[FNUM_MAX][20]
+       )
+
+(declare (ignore main_dir))
+
+(let (
+  (fnum 0) ;  int fnum = 0;
+  (dir_list (directory "./D/*/" :FULL t))
+  dir_name
+  )
+
+  ;(print_files_in_dir "./D/*/")
+  ;(EXT:DIR "D/*/") 
+
+;  GDir*  dir = g_dir_open (main_dir, 0, NULL);
+;  const gchar*  name;
+
+;  while ((name = g_dir_read_name (dir)) != NULL) {
+  (dotimes (i (list-length dir_list))
+
+;    if (!g_file_test (name, G_FILE_TEST_IS_DIR))
+;      continue; // eсли это нe дирeктория, то пропускаeм
+
+    (setf dir_name (last (pathname-directory    (nth i dir_list))))
+    (setf dir_name (first dir_name))
+
+;    if (! strcmp (name, "t_files")) 
+;      continue;
+    (unless (string= dir_name "t_files")
+
+;    printf ("name= %s \n", name);
+      ;(format t "name= ~s ~%" dir_name)
+
+      (setf (nth fnum flist) dir_name) ;    strcpy (flist[fnum] , name);
+      (incf fnum)                      ;    fnum++;
+    )
+;  }
+    )
+
+  fnum ; *p_fnum = fnum;  
+))
+;-------------------------------------------------------------------------------
+;void
+(defun tadmor_get_arrays (
+       tad      ; TADMOR *tad, 
+       main_dir ; char *main_dir
+       )
+
+(let (
+  fnum tnum xnum ;  int 
+  ;(f_list (make-array (list FNUM_MAX 20)))
+  (f_list (make-list FNUM_MAX))
+  )
+
+;  if (g_chdir (main_dir) == -1)
+;  //if (g_chdir (".") == -1)
+;    g_error ("main_dir");
+
+  (Y-system "cd ./D")  ;??
+
+;  //----------------------------------------------------
+;  int   fnum;
+;  static char f_list[FNUM_MAX][20];
+
+;  check_dir_files (main_dir, &fnum, f_list);
+  (setf fnum (check_dir_files main_dir f_list))
+
+;  //char *flist[] = {"u_files"};
+;  //char *flist[] = {"rho_files", "p_files", "u1_files"};
+;  //char *flist[] = ;
+
+;  //----------------------------------------------------
+
+  (setf tnum (calc_tnum "D/t_files/*"))
+;  int xnum = calc_xnum (f_list[0]); // u_files 
+  (setf xnum (calc_xnum (nth 0 f_list)))
+
+  ;(format t "tnum= ~s ~%" tnum)
+  ;(format t "xnum= ~s ~%" xnum)
+
+;  int ti;
+;  int fi = 0;
+
+;  if (tnum > TNUM_MAX)  g_error ("tnum > TNUM_MAX");
+;  // почeму здeсь заполняeтся мeньшний массив бeз ошибки ?
+
+;  tad->t = read_values_t ("t_files", tnum);
+  (setf (VAR_T tad) (read_values_t  "t_files" tnum))
+  ;(format t "VAR_T= ~s ~%" (VAR_T tad))
+
+;  for (fi=0; fi< fnum; fi++) {
+  (dotimes (fi fnum)
+    (setf (nth fi (NAMES tad)) (nth fi f_list)) ; tad->names[fi] = f_list[fi];
+
+;    for (ti=0; ti< tnum; ti++) {
+    (dotimes (ti tnum)
+      ;; tad->u[fi][ti] = read_values_u (f_list[fi], xnum, ti);
+      (setf (aref (VAR_U tad) fi ti) (read_values_u  (nth fi f_list) xnum ti))
+      )
+    )
+
+;  g_chdir (".."); // это что?
+  (Y-system "cd ..") 
+
+  (setf (XNUM tad) xnum) ;  tad->xnum = xnum; 
+  (setf (TNUM tad) tnum) ;  tad->tnum = tnum; 
+  (setf (FNUM tad) fnum) ;  tad->fnum = fnum; 
+
+;/*   printf ("\n"); */
+;/*   printf ("tnum = %d \n", tad->tnum); */
+;/*   printf ("xnum = %d \n", tad->xnum); */
+;/*   printf ("fnum = %d \n", tad->fnum); */
+;/*   printf ("\n"); */
+
+))
+;-------------------------------------------------------------------------------
+;/* void */
+(defun  tadmor_print (
+        tad ; TADMOR *tad
+        ) 
+
+  (format t "~%")
+  (format t "TAD= ~s ~%" tad)
+
+  (format t "tnum = ~s ~%"  (TNUM tad)) 
+  (format t "xnum = ~S ~%"  (XNUM tad)) 
+
+  (format t "names = ~s ~%" (NAMES tad)) 
+  (format t "t     = ~s ~%" (VAR_T tad)) 
+  (format t "u     = ~s ~%" (VAR_U tad)) 
+
+;/*   int ti, xi; */
+;/*   for (ti=0; ti< tad->tnum; ti++) { */
+;/*     printf ("%2d) ", ti); */
+
+;/*     for (xi=0; xi< 5; xi++) { */
+;/*       printf ("%f ", (tad->u[ti])[xi]); */
+;/*     } */
+;/*     printf ("\n"); */
+;/*   } */
+
+  (format t "~%")
+)
+;-------------------------------------------------------------------------------
+;/* void */
+;/* reader_test (char *main_dir) */
+;/* { */
+;/*   TADMOR tadmor, *tad = &tadmor; */
+
+;/*   tadmor_get_arrays (tad, main_dir); */
+
+;/*   tadmor_print (tad); */
+
+;/*   printf ("\n"); */
+;/*   return; */
+;/* } */
+;===============================================================================
+; b_test.c
+;===============================================================================
+
+;//#include <gtk/gtk.h>  
+
+;#include "a_comm.h"
+;#include "a_plot.h"
+
+;#include "b_gnup.h"
+;#include "b_plox.h"
+;#include "gaul.h"
+
+;#include "burger.h"
+
+;#include "m_corp.h"  
+;#include "m_fgsl.h"
+  
+;#include "s_func.h"
+
+;-------------------------------------------------------------------------------
+;//
+;-------------------------------------------------------------------------------
+;YT_PLOT *
+(defun tadmor_make_plot (
+       tad ; TADMOR *tad
+       )
+
+(let* (
+  (xnum  (XNUM tad)) ;  int xnum = tad->xnum; 
+  (fnum  (FNUM tad)) ;  int fnum = tad->fnum;
+  (tnum  (TNUM tad)) ;  int tnum = tad->tnum;
+
+  ;; // от куда брать эти парамeтры?
+  (x_min  0)          ;  double x_min  = 0; 
+  (x_max  (* 2 G_PI)) ;  double x_max  = 2*G_PI;
+  (x_step (/ (- x_max x_min) (- xnum 1))) ;  double x_step = (x_max - x_min) / (xnum - 1);
+
+  (plot  (plot_create fnum xnum tnum)) ;  YT_PLOT *plot;
+  )
+
+  ;; формируем "x"
+  (dotimes (i xnum)
+    ;;    plot->x[i] = x_min + x_step * i;
+    (setf (nth i (X plot)) (+ x_min (* x_step i)))
+    )
+
+  (dotimes (fi fnum)
+  (dotimes (ti tnum)
+    ;; теперь сами графики:
+    ;; P_LINE (plot, fi, ti) = (tad->u[fi][ti]);
+    ;; P_NAME (plot, fi) = tad->names[fi];
+
+    (setf (PP_STEP_F plot ti fi) (aref (VAR_U tad) fi ti))
+    (setf (PP_NAME plot fi) (nth fi (NAMES tad)))
+    
+    ;; общий титл ..
+    ;; sprintf (P_TITLE (plot,ti), "ti = %d", ti);
+    (setf (PP_STEP_NAME plot ti) (format nil "ti = ~d" ti))
+    ))
+
+  plot  
+))
+;-------------------------------------------------------------------------------
+;void
+;plot_add_plot (YT_PLOT *plot, YT_PLOT *plot2)
+;{ 
+
+;  plot->fnum = plot->fnum + 1;
+
+;  int ti;
+;  for (ti=0 ; ti < plot->tnum ; ti++) {
+
+;    P_LINE (plot, /*fi*/1, ti) = P_LINE (plot2, /*fi*/0, ti);
+;    P_NAME (plot, /*fi*/1)     = P_NAME (plot2, /*fi*/0);
+
+;  }
+
+;  // в 1-м фрейме:
+;  //plot->fr[0][0] = 0/*fi*/;
+;  plot->fr[0][1] = 1/*fi*/; 
+
+;  return;  
+;}
+;-------------------------------------------------------------------------------
+(defun make_tadmor_class ()
+
+(let (
+  (tad (make-instance 'TADMOR))
+  )
+
+ (setf (NAMES tad) (make-list FNUM_MAX))                  ; char   *names[FNUM_MAX];
+ (setf (VAR_U tad) (make-array (list FNUM_MAX TNUM_MAX))) ; double *u[FNUM_MAX][TNUM_MAX];
+
+ tad
+))
+;-------------------------------------------------------------------------------
+;void 
+(defun tadmor_plotbig_print (
+             main_dir ; char *main_dir
+             ) 
+(let (
+  plot ;  YT_PLOT *plot;
+;  TADMOR tadmor, *tad = &tadmor;
+  (tad (make_tadmor_class))
+  )
+
+  (tadmor_get_arrays tad main_dir)
+  ;(tadmor_print      tad)
+
+  (setf plot  (tadmor_make_plot tad))
+
+;  plotbig_print (plot, 0,0,0,0);
+  (plot_print_gui plot)
+
+))
+;===============================================================================
+;
+;-------------------------------------------------------------------------------
+(defun prepare_sin_cos ()
+
+(let* (
+  count
+  (tnum  10)
+
+  ylist1 ylist2
+  x y1 y2
+  (xnum 100)
+
+  (plot (plot_create  2 xnum tnum))
+  )
+
+  (setf (PP_NAME plot 0) "SIN")
+  (setf (PP_NAME plot 1) "COS")
+
+  (dotimes (ti tnum)
+    (setf count (+ ti 2))
+    (setf (PP_STEP_NAME plot ti) "PLOT_TEST:")
+    
+    (setf ylist1 (make-list xnum))
+    (setf ylist2 (make-list xnum))
+    
+    (dotimes (i xnum)
+      (setf x (* i 0.1))
+      (setf y1 (- (* (sin x) (cos (* count x))) 0.5))
+      (setf y2 (+ (* (sin (* count x)) (cos x)) 0.5))
+      
+      (setf (nth i (X plot)) x)     
+      (setf (nth i ylist1)   y1)
+      (setf (nth i ylist2)   y2)
+      )
+    
+    (setf (PP_STEP_F plot ti 0) ylist1)
+    (setf (PP_STEP_F plot ti 1) ylist2)
+    )
+	
+  plot
+))
+;-------------------------------------------------------------------------------
+;int 
+(defun main (
+       ; int argc, char** argv
+       ) 
+
+(let* ( 
+      
+#+:CLISP  (argus_  EXT:*ARGS*)
+#+SBCL    (argus_ (cddr *posix-argv*))
+
+  (argc (list-length argus_))
+  name ;  char *name;
+  plot ;  YT_PLOT *plot;
+)
+
+;-----------------------------------
+; пока временно не можем читать диры, сделаем эмуляцию
+; параметров по умолчанию
+ (setf argc 1)
+ (setf argus_ (list "2") )
+
+;*** - PARSE-NAMESTRING: Argument
+;       (#P"/cygdrive/e/EGENA/cygwin/s/P/lisper/D/t_files/"
+;        #P"/cygdrive/e/EGENA/cygwin/s/P/lisper/D/t_files/" (22 27 23 1 11 2010)
+;        0)
+;      should be a pathname designator (OR STRING FILE-STREAM PATHNAME)
+;-----------------------------------
+
+;  // eсли вообщe нeт парамeтров
+;  if (argc == 1) {
+  (if (= argc 0)
+
+    (tadmor_plotbig_print ".")
+;    //-----------------------------------------------------------------
+;    // а иначe смотрим по пeрвому парамeтру
+;  } else {
+    (progn
+      (setf name (first argus_)) ;    name = argv[1];
+      ;(format t "name= ~s ~%" name)
+
+      (cond 
+
+       ((string= name "2") 
+        ;(mytest2)
+        (setf plot (prepare_sin_cos))
+        )
+
+       ((string= name "3") 
+        (setf plot (plot_test3_prepare))
+        )
+
+;    //-----------------------------------------------------------------
+;    if (!strcmp (name, "2")) {
+ 
+;     //minfunc_file_print (/* fname */"LAST.sol", argc, argv);
+;      double  xmin, xmax;
+;      YT_MINFUNC *minfunc = minfunc_read_save ("LAST.sol", YREAD, NULL);
+;      xmin = +0;
+;      xmax = -0;
+;      //minfunc_print (1/*win*/, 1/*gnu*/, minfunc,  xmin, xmax);
+;      YT_PLOT *plot;
+;      plot = minfunc_print_prepare (minfunc, xmin, xmax);
+
+;      //plotbig_print (plot, 0,0,0,0);
+
+;      YT_PLOT *plot2;
+;      TADMOR tadmor, *tad = &tadmor;
+;      tadmor_get_arrays (tad, /* name */".");
+;      plot2 = tadmor_make_plot (tad);
+
+;      plot_add_plot (plot, plot2);
+
+;      plotbig_print (plot, 0,0,0,0);
+;      //plotbig_print (plot2, 0,0,0,0);
+
+;    } else 
+;    //-----------------------------------------------------------------
+;    else {
+;      Error ("name = argv[1]");
+;      //tadmor_plotbig_print (name) ;
+;    }
+
+      )
+
+      (plot_print_gui plot)
+    )
+    )
+
+))
+;===============================================================================
+;
+
+(main)
+
+;===============================================================================

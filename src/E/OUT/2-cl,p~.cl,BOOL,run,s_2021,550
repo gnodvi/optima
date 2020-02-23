@@ -1,0 +1,221 @@
+
+
+Fitness cases: 
+
+  1)  T         T         T         T         T          =  NIL             
+  2)  T         T         T         T         NIL        =  T               
+  3)  T         T         T         NIL       T          =  T               
+  4)  T         T         T         NIL       NIL        =  NIL             
+  5)  T         T         NIL       T         T          =  T               
+  6)  T         T         NIL       T         NIL        =  NIL             
+  7)  T         T         NIL       NIL       T          =  NIL             
+  8)  T         T         NIL       NIL       NIL        =  T               
+  9)  T         NIL       T         T         T          =  T               
+ 10)  T         NIL       T         T         NIL        =  NIL             
+ 11)  T         NIL       T         NIL       T          =  NIL             
+ 12)  T         NIL       T         NIL       NIL        =  T               
+ 13)  T         NIL       NIL       T         T          =  NIL             
+ 14)  T         NIL       NIL       T         NIL        =  T               
+ 15)  T         NIL       NIL       NIL       T          =  T               
+ 16)  T         NIL       NIL       NIL       NIL        =  NIL             
+ 17)  NIL       T         T         T         T          =  T               
+ 18)  NIL       T         T         T         NIL        =  NIL             
+ 19)  NIL       T         T         NIL       T          =  NIL             
+ 20)  NIL       T         T         NIL       NIL        =  T               
+ 21)  NIL       T         NIL       T         T          =  NIL             
+ 22)  NIL       T         NIL       T         NIL        =  T               
+ 23)  NIL       T         NIL       NIL       T          =  T               
+ 24)  NIL       T         NIL       NIL       NIL        =  NIL             
+ 25)  NIL       NIL       T         T         T          =  NIL             
+ 26)  NIL       NIL       T         T         NIL        =  T               
+ 27)  NIL       NIL       T         NIL       T          =  T               
+ 28)  NIL       NIL       T         NIL       NIL        =  NIL             
+ 29)  NIL       NIL       NIL       T         T          =  T               
+ 30)  NIL       NIL       NIL       T         NIL        =  NIL             
+ 31)  NIL       NIL       NIL       NIL       T          =  NIL             
+ 32)  NIL       NIL       NIL       NIL       NIL        =  T               
+
+
+Parameters used for this run: 
+---------------------------------------------------------------------------
+Maximum number of Generations:            10 
+Size of Population:                       100 
+Reproduction fraction:                    0.1 
+Selection method:                         TOURNAMENT 
+Generation method:                        RAMPED-HALF-AND-HALF 
+Tournament group size:                    7 
+---------------------------------------------------------------------------
+Max depth of new individuals:             5 
+Max depth of new subtrees for mutants:    4 
+Max depth of individuals after crossover: 17 
+Crossover at any point fraction:          0.2 
+Crossover at function points fraction:    0.7 
+Number of fitness cases:                  32 
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Generation 0: 
+Average standardized fitness = 16.0 
+Best    standardized fitness = 15.0 and 17 hits. 
+It was: 
+ADF0: 
+(NOR (NAND (NAND ARG2 ARG0) (NOR ARG2 ARG0))
+ (OR (AND ARG0 ARG2) (AND ARG2 ARG2))) 
+ADF1: 
+(NOR (NAND (NAND ARG0 ARG0) (OR ARG2 ARG1))
+ (NOR (NOR ARG2 ARG2) (OR ARG0 ARG2))) 
+RPB0: 
+(ADF1 (NOR (NAND D4 D0) (OR D2 D2))
+ (ADF0 (ADF1 D4 D0 D2) (ADF0 D4 D2 D1) (NAND D0 D3))
+ (NOR (ADF1 D1 D2 D4) (AND D3 D1))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 1: 
+Average standardized fitness = 15.96 
+Best    standardized fitness = 15.0 and 17 hits. 
+It was: 
+ADF0: (NOR (NAND (NAND ARG2 ARG0) (NOR ARG2 ARG0)) (NAND ARG2 ARG0)) 
+ADF1: 
+(NOR (NAND (NAND ARG0 ARG0) (OR ARG2 ARG1))
+ (NOR (NOR ARG2 ARG2) (OR ARG0 ARG2))) 
+RPB0: 
+(ADF1 (NOR (NAND D4 D0) (OR D2 D2))
+ (ADF0 (ADF1 D4 D0 D2) (ADF0 D4 D2 D1) (NAND D0 D3))
+ (NOR (ADF1 D1 D2 D4) (AND D3 D1))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 2: 
+Average standardized fitness = 15.83 
+Best    standardized fitness = 15.0 and 17 hits. 
+It was: 
+ADF0: (AND ARG1 ARG2) 
+ADF1: 
+(NOR (NAND (NAND ARG0 ARG0) (OR ARG2 ARG1))
+ (NOR (NOR ARG2 ARG2) (OR ARG0 ARG2))) 
+RPB0: 
+(ADF1 (NOR (NAND D4 D0) (OR D2 D2))
+ (ADF0 (ADF1 D4 D0 D2) (ADF0 D4 D2 D1) (NAND D0 D3))
+ (NOR (ADF1 D1 D2 D4) (AND D3 D1))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 3: 
+Average standardized fitness = 15.62 
+Best    standardized fitness = 14.0 and 18 hits. 
+It was: 
+ADF0: (AND ARG1 ARG2) 
+ADF1: 
+(NOR (NAND (NAND ARG0 ARG0) (OR ARG2 ARG1))
+ (NOR (NOR ARG2 ARG2) (OR ARG0 ARG2))) 
+RPB0: 
+(ADF1 (NOR (NAND D4 D0) (OR D2 D2))
+ (ADF0 (ADF1 D4 D0 D2) (NAND D4 D0) (NAND D0 D3))
+ (NOR (ADF1 D1 D2 D4) (ADF0 D4 D3 D1))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 4: 
+Average standardized fitness = 15.38 
+Best    standardized fitness = 14.0 and 18 hits. 
+It was: 
+ADF0: (AND ARG1 ARG2) 
+ADF1: 
+(NOR (NAND (NAND ARG0 ARG0) (OR ARG2 ARG1))
+ (NOR (NOR ARG2 ARG2) (OR ARG0 ARG2))) 
+RPB0: 
+(ADF1 (NOR (NAND D4 D0) (OR D2 D2))
+ (ADF0 (NAND D4 D0) (NAND D4 D0) (NAND D0 D3))
+ (NOR (ADF1 D1 D2 D4) (ADF0 D4 D3 D1))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 5: 
+Average standardized fitness = 15.2 
+Best    standardized fitness = 14.0 and 18 hits. 
+It was: 
+ADF0: (AND ARG1 ARG2) 
+ADF1: 
+(NOR (NAND (NAND ARG0 ARG0) (OR ARG2 ARG1))
+ (NOR (NOR ARG2 ARG2) (NAND ARG0 ARG0))) 
+RPB0: 
+(ADF1 (NOR (NAND D4 D0) (OR D2 D2))
+ (ADF0 (ADF1 D4 D0 D2) (NAND D4 D0) (NAND D0 D3))
+ (NOR (ADF1 D1 D2 D4) (ADF0 D4 D3 D1))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 6: 
+Average standardized fitness = 15.07 
+Best    standardized fitness = 14.0 and 18 hits. 
+It was: 
+ADF0: (AND ARG1 ARG2) 
+ADF1: 
+(NOR (NAND (NAND ARG0 ARG0) (OR ARG2 ARG1))
+ (NOR (NOR ARG2 ARG2) (OR ARG0 ARG2))) 
+RPB0: 
+(ADF1 (NOR (NAND D4 D0) (OR D2 D2))
+ (ADF0 (NAND D4 D0) (NAND D4 D0) (NAND D0 D3))
+ (NOR (ADF1 D1 D2 D4) (ADF0 D4 D3 D1))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 7: 
+Average standardized fitness = 14.76 
+Best    standardized fitness = 14.0 and 18 hits. 
+It was: 
+ADF0: (AND ARG1 ARG2) 
+ADF1: 
+(NOR (NAND (NAND ARG0 ARG0) (OR ARG2 ARG1))
+ (NOR (NOR ARG2 ARG2) (OR ARG0 ARG2))) 
+RPB0: 
+(ADF1 (NOR (NAND D4 D0) (OR D2 D2))
+ (ADF0 (NAND D4 D0) (NAND D4 D0) (NAND D0 D3))
+ (NOR (ADF1 D1 D2 D4) (ADF0 D4 D3 D1))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 8: 
+Average standardized fitness = 14.84 
+Best    standardized fitness = 14.0 and 18 hits. 
+It was: 
+ADF0: (AND ARG1 ARG2) 
+ADF1: 
+(NOR (NAND (NAND ARG0 ARG0) (OR ARG2 ARG1))
+ (NOR (NOR ARG2 ARG2) (OR ARG0 ARG2))) 
+RPB0: 
+(ADF1 (NOR (NAND D4 D0) (OR D2 D2)) (ADF0 (OR D2 D2) (NAND D4 D0) (NAND D0 D3))
+ (NOR (ADF1 D1 D2 D4) (ADF0 D4 D3 D1))) 
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+Generation 9: 
+Average standardized fitness = 14.89 
+Best    standardized fitness = 14.0 and 18 hits. 
+It was: 
+ADF0: (AND ARG1 ARG2) 
+ADF1: 
+(NOR (NAND (NAND ARG0 ARG0) (OR ARG2 ARG1))
+ (NOR (NOR ARG2 ARG2) (NAND ARG0 ARG0))) 
+RPB0: 
+(ADF1 (NOR (NAND D4 D0) (OR D2 D2))
+ (ADF0 (ADF1 D4 D0 D2) (NAND D4 D0) (NAND D0 D3))
+ (NOR (ADF1 D1 D2 D4) (ADF0 D4 D3 D1))) 
+---------------------------------------------------------------------------
+
+
+===========================================================================
+THE BEST: 
+
+Generation 3, standardized fitness = 14.0 and 18 hits.  
+It was: 
+ADF0: (AND ARG1 ARG2) 
+ADF1: 
+(NOR (NAND (NAND ARG0 ARG0) (OR ARG2 ARG1))
+ (NOR (NOR ARG2 ARG2) (OR ARG0 ARG2))) 
+RPB0: 
+(ADF1 (NOR (NAND D4 D0) (OR D2 D2))
+ (ADF0 (ADF1 D4 D0 D2) (NAND D4 D0) (NAND D0 D3))
+ (NOR (ADF1 D1 D2 D4) (ADF0 D4 D3 D1))) 
+
+

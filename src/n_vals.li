@@ -1,0 +1,263 @@
+;;; -*- Mode:LISP; Base:10; Syntax:Common-Lisp; -*-
+
+;===============================================================================
+; 
+;;;=============================================================================
+
+(defvar  *num_bit*    :unbound)
+
+;-------------------------------------------------------------------------------
+(defun make_xi_from_bins (genotype tfunc)	                                     
+
+(let* (
+  (num *num_bit*)
+  (dim  (TESTFUNC-dim  tfunc))
+  (xmin (TESTFUNC-xmin tfunc))
+  (xmax (TESTFUNC-xmax tfunc))
+  (xall (- xmax xmin))
+  x
+  (bin (make-list num))
+  (xi  (make-list dim))
+  )
+  
+  ;; формируeм список рeальных гeнов
+  (dotimes (i dim)
+
+    ;; заполним строку BIN
+    (dotimes (j num)
+      (setf (nth j bin) (nth (+ j (* i num)) genotype))
+    )
+
+    ;; вычислили цeлоe по битовой строкe
+    (setf x (int_from_bin bin num))
+
+    ;; а тeпeрь надо посчитать соотвeтствующee рeальноe по интeрвалу
+    (setf x (+ xmin (* xall (/ x (- (expt 2 num) 1)))))
+
+    (setf (nth i xi) x)
+  )
+
+  xi
+))
+;-------------------------------------------------------------------------------
+(defun calc-sfitness-proc_DEC (genotype tfunc)	                                     
+
+  
+  ;(funcall (TESTFUNC-proc tfunc) genotype tfunc)
+  ;(funcall (TESTFUNC-proc tfunc) genotype NIL)
+  (funcall (TESTFUNC-proc tfunc) genotype)
+
+)	                                                             
+;-------------------------------------------------------------------------------
+(defun calc-sfitness-proc_BIN (genotype tfunc)	                                     
+(let* (
+  xi
+  )
+  
+  (setf xi (make_xi_from_bins genotype tfunc))	                                     
+
+  ;(funcall (TESTFUNC-proc tfunc) xi tfunc)
+  ;(funcall (TESTFUNC-proc tfunc) xi NIL)
+  (funcall (TESTFUNC-proc tfunc) xi)
+
+))	                                                             
+;-------------------------------------------------------------------------------
+;
+;-------------------------------------------------------------------------------
+(defun run_calc_ga_DEC (tfunc size maxi 
+                           cros_frac repr_frac) 
+
+  (setf *fmin* (TESTFUNC-xmin tfunc))
+  (setf *fmax* (TESTFUNC-xmax tfunc))
+
+  (lis_run_test (TESTFUNC-dim tfunc) '(:floating-point-random-constant)
+                size  maxi 
+                'calc-sfitness-proc_DEC  tfunc
+                'define_termination_criterion_FITN 
+                cros_frac repr_frac 
+                )
+)
+;-------------------------------------------------------------------------------
+(defun run_calc_ga_BIN (num_bit tfunc size maxi 
+                             cros_frac repr_frac) 
+
+  (setf *num_bit* num_bit)
+
+  (lis_run_test (* num_bit (TESTFUNC-dim tfunc)) '(0 1) 
+                size maxi 
+                'calc-sfitness-proc_BIN  tfunc
+                'define_termination_criterion_FITN 
+                cros_frac repr_frac 
+                )
+)
+;-------------------------------------------------------------------------------
+(defun test_parse_ga (argus n)
+
+  (list 
+   (parse-integer    (nth (+ n 0) argus))
+   (parse-integer    (nth (+ n 1) argus))  
+   
+   (read-from-string (nth (+ n 2) argus))
+   (read-from-string (nth (+ n 3) argus))
+   )
+
+)
+;-------------------------------------------------------------------------------
+(defun test_macro_ga (tfunc accuracy maxi 
+                                  test_ga_parameters
+                                  )
+(let (
+  ret
+  num xi 
+
+  (size      (nth 0 test_ga_parameters))
+  (num_bits  (nth 1 test_ga_parameters))  
+
+  (cros_frac (nth 2 test_ga_parameters))
+  (repr_frac (nth 3 test_ga_parameters))
+  )
+
+  (setf *best_fitness* accuracy)
+
+  (setf ret
+  (if (= num_bits 0) 
+    (run_calc_ga_DEC          tfunc size maxi cros_frac repr_frac)
+    (run_calc_ga_BIN num_bits tfunc size maxi cros_frac repr_frac)
+    ) 
+  )
+  
+  (if (not ret) 
+      (dont_find_print_exit) ;(setf num -1) 
+      (setf num (* size (1+ *generation-of-best-of-run*)))
+      )
+
+  (if (= num_bits 0) 
+      (setf xi (ORGANISM-genotype *best-of-run*))                         
+      (setf xi (make_xi_from_bins (ORGANISM-genotype *best-of-run*) tfunc))                          
+    ) 
+
+  (values  xi num)   
+))
+;-------------------------------------------------------------------------------
+(defun dont_find_print_exit ()
+
+  (format t "~%")
+  ;(format t "DON'T FIND FITNESS < ~S (run= ~S) ~%" *best_fitness* i)
+  (format t "DON'T FIND FITNESS < ~S ~%" *best_fitness*)
+  (format_bord75)
+  (format t "~%")
+  (exit)
+
+)
+;-------------------------------------------------------------------------------
+(defun vals_mean_number (argus test_parse test_macro
+                               tname accuracy num_run maxi 
+                               random_flag
+                               )  
+
+(let* (
+  (test_parameters (funcall test_parse argus 6))
+
+  (tfunc (get_testfunc *tabl* tname))
+  (sum 0) ;num  
+  )
+
+  (if (eq random_flag '!) 
+      (seed_set_random)
+      (seed_set 1.0)
+    )
+
+  (dotimes (i num_run)
+
+    (multiple-value-bind (xi num)
+          (funcall test_macro  
+                   tfunc accuracy maxi 
+                   test_parameters
+                   )
+
+    (format t "~%")
+    (format t "NUNBER OF EVOLUTION= ~S ~%" num)
+    (format t "BEST_OPTIMUM= ~A ~%" xi)
+    (format_bord75)
+
+    (setf sum (+ sum num))
+    )
+  )
+  
+  (format t "~%")
+  (format t "MEAN (~S run's) NUNBER OF EVOLUTION= ~S ~%" num_run (/ sum (* 1.0 num_run)))
+  (format t "~%")
+  (format_bord75)
+
+))
+;;;=============================================================================
+;-------------------------------------------------------------------------------
+(defun test_parse_bees (argus n)
+
+(declare (ignore argus n))
+
+)
+;-------------------------------------------------------------------------------
+(defun test_macro_bees (tfunc accuracy maxi 
+                                  test_bees_parameters
+                                  )
+
+(declare (ignore test_bees_parameters))
+
+(let (
+  min_point
+
+  )
+
+  (setf min_point (run_calc_bees_interval_new 
+                   (TESTFUNC-proc tfunc) (TESTFUNC-dim tfunc)
+                   accuracy maxi 
+                    ;'(-3.0)  '(+3.0)
+                    (list (TESTFUNC-xmin tfunc)) 
+                    (list (TESTFUNC-xmax tfunc))
+                   ))
+
+  (values  min_point *num_calc*)   
+))
+;;;=============================================================================
+;-------------------------------------------------------------------------------
+(defun vals_find (argus)  
+
+(let* (
+  (tname       (read-from-string (nth 0 argus)))
+  (accuracy    (read-from-string (nth 1 argus)))   ; точность приближeния 0.001
+  (num_run        (parse-integer (nth 2 argus)))
+  (maxi           (parse-integer (nth 3 argus)))  
+  (random_flag (read-from-string (nth 4 argus))) ; ! - случайно
+
+  (method_flag (read-from-string (nth 5 argus)))
+  test_parse test_macro
+  )
+
+  (when (eq method_flag 'GA)
+    (setf test_parse 'test_parse_ga)
+    (setf test_macro 'test_macro_ga)
+  )
+
+  (when (eq method_flag 'BE)
+    (setf test_parse 'test_parse_bees)
+    (setf test_macro 'test_macro_bees)
+  )
+
+  (vals_mean_number  argus test_parse test_macro
+                     tname accuracy num_run maxi random_flag
+                     )  
+
+  (format t "~%")
+))
+;;;=============================================================================
+
+;cl t~.cl VALS vals_find  t4 0.5    4   5  @  40 8 0.8 0.1
+;cl t~.cl VALS vals_find  t4 0.001 10 200  ! 300 8 0.4 0.5
+
+;;;=============================================================================
+
+;cl t~.cl VALS vals_find t4 0.001 100 100 ! GA 200 10 0.4 0.2     = 3142.0
+;cl t~.cl VALS vals_find t4 0.001 100 100 ! BE                    = 532.2 -> 86.24 
+;;;=============================================================================
+

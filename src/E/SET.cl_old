@@ -1,0 +1,128 @@
+;===============================================================================
+
+(load "../../a-comm.cl")
+
+(EXT:cd "..") ;# перейти в корневую директорию для выполнения заданий
+
+;===============================================================================
+(format t "~%")
+
+;(tst "0" "E/OUT" "."  "cl n~.cl VALS vals_find t5 0.1 1 5 @ GA 40 8 0.7 0.2")
+;(tst "0" "E/OUT" "."  "cl n~.cl VALS vals_find t7_min 0.1 1 10 @ GA 50 10 0.4 0.2")
+(tst "0" "E/OUT" "."  "cl o~.cl GENA ant_test_ga @ 11 2")
+
+;(tst "0" "E/OUT" "."  "cl c~.cl CELL ca_main_new")
+
+;(tst "1" "E/OUT" "."  "sl s~.cl SOLV berger_main 100 5 0.005")
+;(tst "1" "E/OUT" "."  "cl t~.cl SCAN scan_main")
+;(tst "1" "E/OUT" "."  "cl t~.cl FINM find_main")
+
+;(tst "1" "E/OUT" "."  "sl s~.cl SOLV heat_main  010 11 -2.0  2.0  5 0.01")
+;(tst "1" "E/OUT" "."  "sl s~.cl SOLV heat_main  100 11  0.0  4.0  5 0.01")
+
+;(tst "1" "E/OUT" "."  "sl s~.cl SOLV heat_main 200  10 0.0 1.0  10 0.001")
+;; но она нe правильно отрабатываeт лeвый край, граничноe пeрeмeнноe условиe
+
+;(tst "1" "E/OUT" "."  "sl s~.cl SOLV gazdin_main")
+;; сильно упрощeнный вариант
+
+;(tst "1" "E/OUT" "."  "sl v~.cl TEST rsb_big_main")
+;(tst "1" "E/OUT" "."  "sl v~.cl TEST rsb_min_main")
+
+;===============================================================================
+
+;(tst "0" "E/OUT" "."  "sl s~.cl SOLV onefun_main 1")
+;(tst "1" "E/OUT" "."  "sl s~.cl SOLV onefun_main 2")
+
+; (tst "0" "E/OUT" "."  "cl s~.cl SOLV ca_main")
+; (tst "0" "E/OUT" "."  "sl s~.cl SOLV glca_main")
+
+; (tst "0" "E/OUT" "."  "sl s~.cl SOLV harmon_main")
+; (tst "0" "E/OUT" "."  "sl s~.cl FUNO u0_dynamic_main 2")
+
+;(tst "0" "E/OUT" "."  "sl s~.cl SOLV laplas_main")
+;(tst "0" "E/OUT" "."  "sl s~.cl SOLV wave_main 020  11 -2.0 2.0  5 0.01")
+
+;(tst "0" "E/OUT" "."  "cl s~.cl SOLV razn_main 010 4  0.1 0.1  30 10")
+;(tst "0" "E/OUT" "."  "sl s~.cl SOLV razn_main 010 0  0.1 0.1  30 5")
+
+;(tst "0" "E/OUT" "."  "cl v~.cl TEST rsb_new_main")
+;(tst "0" "E/OUT" "."  "cl m~.cl MINF more_test -1")
+
+;(tst "0" "E/OUT" "."  "ls")
+;(tst "0" "E/OUT" "."  "cl a~.cl COMM rand_4")
+;(tst "0" "E/OUT" "."  "sl l~.cl parabolic fr 100")
+
+
+(format t "~%")
+;===============================================================================
+
+;#tst 0 E/OUT . "sl c~.cl GRAF test_11"
+;#tst 0 E/OUT . "cl b~.cl PLUT plot_test3_save"
+;#tst 0 E/OUT . "sl MyGSL.li"
+
+;#tst 0 E/OUT . "cl a~.cl SORT-TEST sort_main"
+;#tst 0 E/OUT . "cl a~.cl SORT-TABS sort_main_03"
+
+;#tst 0 E/OUT . "cl a~.cl COMM main_4"
+;#tst 0 E/OUT . "cl a~.cl COMM test5"
+
+;#tst 0 E/OUT . "cl a~.cl win_test_old"
+
+;#tst 0 E/OUT . "cl a~.cl GRAF amat_03"
+;#tst 0 E/OUT . "cl a~.cl GRAF test_01"
+;#tst 0 E/OUT . "cl a~.cl plot_test"
+;#tst 3 E/OUT . "cl t~.cl SOLV berger_main"
+
+;#tst 1 E/OUT . "cl t~.cl ANTS ant_test_old 2"
+;#tst 1 E/OUT . "cl t~.cl ANTS ant_test_bin"
+;#tst 1 E/OUT . "cl t~.cl ANTS ant_test_ga @ 11 2"
+;#tst 1 E/OUT . "cl t~.cl VALS ga_find @ 0.5 4 40 5 t4 8 0.8 0.1"
+
+;#tst 1 E/OUT . "cl t~.cl VALS vals_find t5 0.1 1 5 @ GA 40 8 0.7 0.2"
+;#tst 1 E/OUT . "cl t~.cl VALS vals_find t7_min 0.1 1 10 @ GA 50 10 0.4 0.2"
+;#tst 1 E/OUT . "cl t~.cl BEES bees_test"
+
+;#tst 0 E/OUT . "cl a~.cl COMM plot_test"
+;#tst 0 E/OUT . "cl t~.cl MINF simp_test"
+
+;#tst 3 E/OUT . "cl tester.cl KOZA all_real"
+;#tst 3 E/OUT . "cl tester.cl KOZA all_bool"
+;#tst 3 E/OUT . "cl tester.cl KOZA all_koza"
+
+;#===============================================================================
+;#tst A E/OUT . "cl a~.cl COMM rand_test"
+
+;#===============================================================================
+;#tst A E/OUT . "cl c_test.cl proc_test 10 2"
+;#tst A E/OUT . "cl tester.cl koza 19_func 2"
+;#tst A E/OUT . "cl a~.cl FITS pops_test"
+
+;#tst A E/OUT . "cl tester.cl koza run 07-ant-0 01"
+;#tst A E/OUT . "cl tester.cl koza run 19_test 12"
+
+;#tst A E/OUT . "cl tester.cl koza edit_0"
+;#tst A E/OUT . "clisp tester.cl koza edit_0" # почему не работает ??
+
+;#tst A E/OUT . "cl tester.cl koza 3-mux 10"
+;#tst A E/OUT . "cl tester.cl koza 3-mux 11"
+;#tst A E/OUT . "cl tester.cl koza 3-mux 12"
+
+;#tst A E/OUT . "cl tester.cl koza 3-mux 13"
+;#tst A E/OUT . "cl tester.cl koza 3-mux 14"
+
+;#tst A E/OUT . "cl tester.cl koza 10_test 10"
+;#tst B E/OUT . "cl tester.cl koza 19_test 10"
+;#tst A E/OUT . "cl tester.cl koza 11-mux 00"
+;#tst A E/OUT . "cl tester.cl koza 07_test 05"
+
+;#tst A E/OUT . "cl koza-1.lisp"
+;#tst A E/OUT . "cl koza-2.lisp"
+;#tst A E/OUT . "cl koza-2.lisp 01"
+
+;#tst B E/OUT . "cl koza-1.lisp 85"
+
+;#tst C E/OUT . "cl koza-1.lisp all"
+;#tst C E/OUT . "sl koza-1.lisp 08"
+
+;===============================================================================

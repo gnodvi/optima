@@ -1,0 +1,33 @@
+;;; -*- Mode:LISP; Base:10; Syntax:Common-Lisp; -*-
+
+;===============================================================================
+
+(defconstant  SCAN_SO  "T/b_scan.so")
+
+
+#+SBCL (load-shared-object SCAN_SO)
+
+#-SBCL
+(FFI:default-foreign-language :stdc)
+
+#-SBCL
+(FFI:DEF-CALL-OUT   c_main_tests
+                    (:library SCAN_SO)
+                    (:name "main_tests")                     
+                    (:return-type NIL)
+                    )
+
+;-------------------------------------------------------------------------------
+(defun l_main_tests ()
+
+#+SBCL (alien-funcall (extern-alien "main_tests" (function void)))
+#-SBCL (c_main_tests)
+
+)
+;-------------------------------------------------------------------------------
+(defun scan_main (argus) (declare (ignore argus))
+
+  (l_main_tests)
+
+)
+;===============================================================================

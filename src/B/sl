@@ -1,0 +1,22 @@
+#!/bin/sh
+#----------------------
+
+# по другому не получилось запустить 
+#
+
+#sbcl --noinform --script $1 $2 $3 $4 $5
+
+#cd /home/Admin/MSOFT/sbcl/1.0.38/R/bin && sbcl --script --core ../lib/sbcl/sbcl.core
+
+#----------------------
+#e:/w/root/home/Admin/MSOFT/sbcl/1.0.38/R/lib/sbcl/
+
+#run "c:\program files\steel bank common lisp\1.0.37\sbcl.exe" --core "c:\program files\steel bank common lisp\1.0.37\sbcl.core"
+
+#/cygdrive/c/"program files"/"steel bank common lisp"/1.0.37/sbcl.exe --core /cygdrive/c"/program files"/"steel bank common lisp"/1.0.37/sbcl.core
+
+/cygdrive/c/"program files"/"steel bank common lisp"/1.0.37/sbcl.exe --core "c:\program files\steel bank common lisp\1.0.37\sbcl.core" --noinform --script $* 
+
+
+
+
