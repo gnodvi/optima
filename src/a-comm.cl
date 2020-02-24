@@ -1,4 +1,6 @@
-;;;=============================================================================
+; -*-   mode: lisp ; coding: koi8   -*- ----------------------------------------
+
+;-------------------------------------------------------------------------------
 ; Diagnostic Severity
 ; There are four levels of compiler diagnostic severity: 
 ;    error 
@@ -407,9 +409,10 @@ argus ; остальные опции строки (без первой команды)
 ; по умолчанию будeм всeгода пользовать стандартными функциями
 ; и только eсли уж совсeм нeт LIBC (напримeр в Виндоуз ?) тогда лисповскими
 
-;(defconstant LIBC_SO "libc.so.6") 
+(defconstant LIBC_SO "libc.so.6") 
+
 ;(defconstant LIBC_SO "/bin/cygwin1.dll") 
-(defconstant LIBC_SO "e:\\W\\ROOT\\bin\\cygwin1.dll") 
+;(defconstant LIBC_SO "e:\\W\\ROOT\\bin\\cygwin1.dll") 
 
 
 #+SBCL  (defvar rand_SUF "_sbcl") 
